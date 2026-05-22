@@ -7,6 +7,10 @@
 
 Bat Call Monitor is my modified fork of BattyBirdNET-Pi for bats, initially to simply show activity based upon nightly monitoring, rather than a basic 24 hour day. Essentially, bats are nocturnal, so it makes more sense to show a nightly analysis from (say) dusk to dawn.
 
+Overview is currently based upon manually entered Dusk & Dawn settings (no auto).
+
+Top 10 now 'all', bottom 10 has been removed.
+
 Use with Raspberry Pi 4 or 5 and an Audiomoth or Echo Meter Touch 2 basic or Pro. Other hardware options may work (aarch64 and amd64). Has been ported to work on [home assistant or docker](https://github.com/alexbelgium/hassio-addons/blob/master/battybirdnet-pi/README_standalone.md).
 **'Easy' - no Linux skill required - installation option available.**
 
