@@ -373,13 +373,13 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true"  ) {
 
   <?php 
   if($iterations == 0) {
-    echo "<h3>No Detections For Today.</h3>";
+    echo "<h3>No Detections For Tonight.</h3>";
   }
   
   // don't show the button if there's no more detections to be displayed, we're at the end of the list
   if($iterations >= 40 && isset($_GET['display_limit']) && is_numeric($_GET['display_limit'])) { ?>
   <center>
-  <button class="loadmore" onclick="loadDetections(<?php echo $_GET['display_limit'] + 40; ?>, this);" value="Today's Detections">Load 40 More...</button>
+  <button class="loadmore" onclick="loadDetections(<?php echo $_GET['display_limit'] + 40; ?>, this);" value="Tonight's Detections">Load 40 More...</button>
   </center>
   <?php }
 
@@ -391,10 +391,10 @@ if(isset($_GET['today_stats'])) {
   <table>
       <tr>
   <th>Total</th>
-  <th>Today</th>
+  <th>Tonight</th>
   <th>Last Hour</th>
   <th>Unique Species Total</th>
-  <th>Unique Species Today</th>
+  <th>Unique Species Tonight</th>
       </tr>
       <tr>
       <td><?php echo $totalcount['COUNT(*)'];?></td>
@@ -500,10 +500,10 @@ die();
     <div id="todaystats"><table>
       <tr>
   <th>Total</th>
-  <th>Today</th>
+  <th>Tonight</th>
   <th>Last Hour</th>
   <th>Unique Species Total</th>
-  <th>Unique Species Today</th>
+  <th>Unique Species Tonight</th>
       </tr>
       <tr>
       <td><?php echo $totalcount['COUNT(*)'];?></td>
@@ -521,7 +521,7 @@ die();
     </table></div>
 
 
-    <h3>Today's Detections <?php if($kiosk == false) { ?>— <input autocomplete="off" size="11" type="text" placeholder="Search..." id="searchterm" name="searchterm"><?php } ?></h3>
+    <h3>Tonight's Detections <?php if($kiosk == false) { ?>— <input autocomplete="off" size="11" type="text" placeholder="Search..." id="searchterm" name="searchterm"><?php } ?></h3>
 
     <div style="padding-bottom:10px" id="detections_table"><h3>Loading...</h3></div>
 

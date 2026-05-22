@@ -24,7 +24,39 @@ $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 
-$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\')');
+//$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\')');
+
+//**********AI
+
+$currentHour = intval(date('G'));
+
+if ($currentHour < 8) {
+    $nightDate = date('Y-m-d', strtotime('-1 day'));
+} else {
+    $nightDate = date('Y-m-d');
+}
+
+$statement2 = $db->prepare("
+SELECT COUNT(*)
+FROM detections
+WHERE
+(
+  CAST(strftime('%H', Time) AS INTEGER) >= 16
+  OR
+  CAST(strftime('%H', Time) AS INTEGER) < 8
+)
+AND
+(
+  CASE
+    WHEN CAST(strftime('%H', Time) AS INTEGER) < 8
+    THEN date(Date, '-1 day')
+    ELSE Date
+  END
+) = '$nightDate'
+");
+
+//*********
+
 if($statement2 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -94,7 +126,8 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
   $iterations = 0;
   $lines;
   $licenses_urls = array();
-  // hopefully one of the 5 most recent detections has an image that is valid, we'll use that one as the most recent detection until the newer ones get their images created
+  // hopefully one of the 5 most recent detections has an image that is valid...
+  // ...we'll use that one as the most recent detection until the newer ones get their images created
   while($mostrecent = $result4->fetchArray(SQLITE3_ASSOC)) {
     $comname = preg_replace('/ /', '_', $mostrecent['Com_Name']);
     $sciname = preg_replace('/ /', '_', $mostrecent['Sci_Name']);
@@ -205,7 +238,8 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
         }
         </style>
         <table class="<?php echo ($_GET['previous_detection_identifier'] == 'undefined') ? '' : 'fade-in';  ?>">
-          <h3>Most Recent Detection: <span style="font-weight: normal;"><?php echo $mostrecent['Date']." ".$mostrecent['Time'];?></span></h3>
+          <h3>Most Recent Detection: <span style="font-weight: normal;">
+			  <?php echo $mostrecent['Date']." ".$mostrecent['Time'];?></span></h3>
           <tr>
             <td class="relative"><a target="_blank" href="index.php?filename=<?php echo $mostrecent['File_Name']; ?>"><img class="copyimage" title="Open in new tab" width="25" height="25" src="images/copy.png"></a>
             <div class="centered_image_container" style="margin-bottom: 0px !important;">
@@ -225,9 +259,9 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
   }
   if($iterations == 0) {
     if($todaycount['COUNT(*)'] > 0) {
-      echo "<h3>Your system is currently processing a backlog of audio. This can take several hours before normal functionality of your BirdNET-Pi resumes.</h3>";
+      echo "<h3>Your system is currently processing a backlog of audio ...could take hours</h3>";
     } else {
-      echo "<h3>No Detections For Today.</h3>";
+      echo "<h3>No Detections For Tonight</h3>";
     }
   }
   die();
@@ -243,7 +277,20 @@ if($statement == False) {
 $result = $statement->execute();
 $totalcount = $result->fetchArray(SQLITE3_ASSOC);
 
-$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\')');
+//$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\')');
+
+//****AI
+$statement3 = $db->prepare("
+SELECT COUNT(*)
+FROM detections
+WHERE DATETIME(Date || ' ' || Time)
+>= DATETIME('now', 'localtime', '-1 hour')
+");
+
+//***
+
+
+
 if($statement3 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -251,7 +298,29 @@ if($statement3 == False) {
 $result3 = $statement3->execute();
 $hourcount = $result3->fetchArray(SQLITE3_ASSOC);
 
-$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\',\'localtime\')');
+//$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\',\'localtime\')');
+
+//*****AI
+$statement5 = $db->prepare("
+SELECT COUNT(DISTINCT(Com_Name))
+FROM detections
+WHERE
+(
+  CAST(strftime('%H', Time) AS INTEGER) >= 16
+  OR
+  CAST(strftime('%H', Time) AS INTEGER) < 8
+)
+AND
+(
+  CASE
+    WHEN CAST(strftime('%H', Time) AS INTEGER) < 8
+    THEN date(Date, '-1 day')
+    ELSE Date
+  END
+) = '$nightDate'
+");
+
+//*****
 if($statement5 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -274,9 +343,9 @@ $totalspeciestally = $result6->fetchArray(SQLITE3_ASSOC);
     <td><?php echo $totalcount['COUNT(*)'];?></td>
   </tr>
   <tr>
-    <th>Today</th>
+    <th>Tonight</th>
     
-    <td><form action="" method="GET"><button type="submit" name="view" value="Today's Detections"><?php echo $todaycount['COUNT(*)'];?></button></td>
+    <td><form action="" method="GET"><button type="submit" name="view" value="Tonight's Detections"><?php echo $todaycount['COUNT(*)'];?></button></td>
     </form>
   </tr>
   <tr>
@@ -284,7 +353,7 @@ $totalspeciestally = $result6->fetchArray(SQLITE3_ASSOC);
     <td><?php echo $hourcount['COUNT(*)'];?></td>
   </tr>
   <tr>
-    <th>Species Detected Today</th>
+    <th>Species Detected Tonight</th>
     <td><form action="" method="GET"><input type="hidden" name="view" value="Recordings"><button type="submit" name="date" value="<?php echo date('Y-m-d');?>"><?php echo $speciestally['COUNT(DISTINCT(Com_Name))'];?></button></td>
     </form>
   </tr>

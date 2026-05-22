@@ -46,9 +46,9 @@ if ($sys_timezone !== "") {
 <div class="banner">
   <div class="logo">
 <?php if(isset($_GET['logo'])) {
-echo "<a href=\"https://github.com/rdz-oss/BattyBirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/bird.png\"></a>";
+echo "<a href=\"https://github.com/rdz-oss/BattyBirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/batRed2.png\"></a>";
 } else {
-echo "<a href=\"https://github.com/rdz-oss/BattyBirdNET-Pi.git\" target=\"_blank\"><img src=\"images/bird.png\"></a>";
+echo "<a href=\"https://github.com/rdz-oss/BattyBirdNET-Pi.git\" target=\"_blank\"><img src=\"images/batRed2.png\"></a>";
 }?>
   </div>
 
@@ -74,7 +74,7 @@ if(isset($_GET['stream'])){
       echo "
   <audio controls autoplay><source src=\"/stream\"></audio>
   </div>
-  <h1><a href=\"/\"><img class=\"topimage\" src=\"images/bnp.png\"></a></h1>
+  <h1><a href=\"/\"><img class=\"topimage\" src=\"images/\"></a></h1>
   </div><div class=\"centered\"><h3>$site_name</h3></div>";
     } else {
       header('WWW-Authenticate: Basic realm="My Realm"');
@@ -89,7 +89,6 @@ if(isset($_GET['stream'])){
     <button type=\"submit\" name=\"stream\" value=\"play\">Live Audio</button>
   </form>
   </div>
-  <h1><a href=\"/\"><img class=\"topimage\" src=\"images/bnp.png\"></a></h1>
 </div><div class=\"centered\"><h3>$site_name</h3></div>";
 }
 if(isset($_GET['filename'])) {

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="homepage/images/batRed.png" width="320" />
+  <img src="homepage/images/batRed.png" width="100" />
 </p>
 <h3 align="center">BattyBirdNET-Pi</h3>
 

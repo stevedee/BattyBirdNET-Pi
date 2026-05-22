@@ -77,7 +77,7 @@ elseif ($config["LONGITUDE"] == "0.000") {
   <button type="submit" name="view" value="Overview" form="views">Overview</button>
 </form>
 <form action="" method="GET" id="views">
-  <button type="submit" name="view" value="Todays Detections" form="views">Today's Detections</button>
+  <button type="submit" name="view" value="Tonight Detections" form="views">Tonight's Detections</button>
 </form>
 <form action="" method="GET" id="views">
   <button type="submit" name="view" value="Spectrogram" form="views">Spectrogram</button>
@@ -89,7 +89,7 @@ elseif ($config["LONGITUDE"] == "0.000") {
   <button type="submit" name="view" value="Streamlit" form="views">Species Stats</button>
 </form>
 <form action="" method="GET" id="views">
-  <button type="submit" name="view" value="Daily Charts" form="views">Daily Charts</button>
+  <button type="submit" name="view" value="Daily Charts" form="views">Nightly Charts</button>
 </form>
 <form action="" method="GET" id="views">
   <button type="submit" name="view" value="Recordings" form="views">Recordings</button>
