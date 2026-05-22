@@ -1,11 +1,12 @@
 <p align="center">
-  <img src="homepage/images/bnp.png" width="320" />
+  <img src="homepage/images/batRed.png" width="320" />
 </p>
 <h3 align="center">BattyBirdNET-Pi</h3>
 
-## Automated real-time bat & bird detection and identification
+## Automated real-time bat detection and identification
 
-Extended and enhanced fork of BirdNET-Pi for bats, birds or your own fine-tuned classifier (insects, mammals, amphibians, ...).
+Bat Call Monitor is my modified fork of BattyBirdNET-Pi for bats, initially to simply show activity based upon nightly monitoring, rather than a basic 24 hour day. Essentially, bats are nocturnal, so it makes more sense to show a nightly analysis from (say) dusk to dawn.
+
 Use with Raspberry Pi 4 or 5 and an Audiomoth or Echo Meter Touch 2 basic or Pro. Other hardware options may work (aarch64 and amd64). Has been ported to work on [home assistant or docker](https://github.com/alexbelgium/hassio-addons/blob/master/battybirdnet-pi/README_standalone.md).
 **'Easy' - no Linux skill required - installation option available.**
 
@@ -76,9 +77,7 @@ Overview page
 
 <img src="homepage/images/BatNET-Pi-Screen.png" width="800" />
 
-Including stats and spectrograms to 128 kHz
 
-<img src="homepage/images/BatNET-Pi-Screen-3.png" width="800" />
 
 ### System components
 
