@@ -15,7 +15,7 @@ Overview is currently based upon manually entered Dusk & Dawn settings (no auto)
 
 Top 10 now 'all' (...well 25, but that is more than enough for us Brits), bottom 10 has been removed.
 
-#From the BattyBirdNet-Pi ReadMe
+## From the BattyBirdNet-Pi ReadMe:-
 
 Use with Raspberry Pi 4 or 5 and a Dodotronic Ultramic or an Audiomoth or Echo Meter Touch 2 basic or Pro. Other hardware options may work (aarch64 and amd64). Has been ported to work on [home assistant or docker](https://github.com/alexbelgium/hassio-addons/blob/master/battybirdnet-pi/README_standalone.md).
 **'Easy' - no Linux skill required - installation option available.**
