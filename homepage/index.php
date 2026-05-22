@@ -46,9 +46,9 @@ if ($sys_timezone !== "") {
 <div class="banner">
   <div class="logo">
 <?php if(isset($_GET['logo'])) {
-echo "<a href=\"https://github.com/rdz-oss/BattyBirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/batRed2.png\"></a>";
+echo "<a href=\"https://github.com/stevedee/BattyBirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/batRed2.png\"></a>";
 } else {
-echo "<a href=\"https://github.com/rdz-oss/BattyBirdNET-Pi.git\" target=\"_blank\"><img src=\"images/batRed2.png\"></a>";
+echo "<a href=\"https://github.com/stevedee/BattyBirdNET-Pi.git\" target=\"_blank\"><img src=\"images/batRed2.png\"></a>";
 }?>
   </div>
 
