@@ -7,11 +7,17 @@
 
 Bat Call Monitor is my modified fork of BattyBirdNET-Pi for bats, initially to simply show activity based upon nightly monitoring, rather than a basic 24 hour day. Essentially, bats are nocturnal, so it makes more sense to show a nightly analysis from (say) dusk to dawn.
 
+Overview page...
+
+<img src="homepage/images/BatNET-Pi-Screen.png" width="800" />
+
 Overview is currently based upon manually entered Dusk & Dawn settings (no auto).
 
-Top 10 now 'all', bottom 10 has been removed.
+Top 10 now 'all' (...well 25, but that is more than enough for us Brits), bottom 10 has been removed.
 
-Use with Raspberry Pi 4 or 5 and an Audiomoth or Echo Meter Touch 2 basic or Pro. Other hardware options may work (aarch64 and amd64). Has been ported to work on [home assistant or docker](https://github.com/alexbelgium/hassio-addons/blob/master/battybirdnet-pi/README_standalone.md).
+#From the BattyBirdNet-Pi ReadMe
+
+Use with Raspberry Pi 4 or 5 and a Dodotronic Ultramic or an Audiomoth or Echo Meter Touch 2 basic or Pro. Other hardware options may work (aarch64 and amd64). Has been ported to work on [home assistant or docker](https://github.com/alexbelgium/hassio-addons/blob/master/battybirdnet-pi/README_standalone.md).
 **'Easy' - no Linux skill required - installation option available.**
 
 ### Purpose
@@ -75,12 +81,6 @@ Enjoy! Feel free to use BattyBirdNET-Pi for your acoustic analyses and research.
 Be aware there is a  limitation: you cannot use it to build a commercial system.
 LICENSE: http://creativecommons.org/licenses/by-nc-sa/4.0/  
 Also consider the references at the end of the page.
-
-### Screenshots
-Overview page
-
-<img src="homepage/images/BatNET-Pi-Screen.png" width="800" />
-
 
 
 ### System components
