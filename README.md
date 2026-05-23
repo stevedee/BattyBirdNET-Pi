@@ -5,15 +5,24 @@
 
 ## Automated real-time bat detection and identification
 
-Bat Call Monitor is my modified fork of BattyBirdNET-Pi for bats, initially to simply show activity based upon nightly monitoring, rather than a basic 24 hour day. Essentially, bats are nocturnal, so it makes more sense to show a nightly analysis from (say) dusk to dawn.
+This Bat Call Monitor project is my modified fork of BattyBirdNET-Pi for bats, initially to simply show activity based upon overnight monitoring, rather than a basic 24 hour day. Essentially, bats are nocturnal, so it makes more sense to show a nightly analysis from (say) dusk to dawn.
 
 Overview page...
 
 <img src="homepage/images/BatNET-Pi-Screen.png" width="800" />
 
-Overview is currently based upon manually entered Dusk & Dawn settings (no auto).
+Overview is currently based upon manually entered Dusk & Dawn values entered via the 'Advanced Settings' screen (no auto).
 
-Top 10 now 'all' (...well 25, but that is more than enough for us Brits), bottom 10 has been removed.
+"Top 10" now 'all' (...well 25, but that is more than enough for us Brits), "bottom 10" has been removed.
+
+##Install my 'Bat Call Monitor' version
+
+NOT tested, but should be something like:-
+
+```sh
+curl -s https://raw.githubusercontent.com/stevedee/BattyBirdNET-Pi/main/newinstaller.sh | bash
+```
+
 
 ## From the BattyBirdNet-Pi ReadMe:-
 
