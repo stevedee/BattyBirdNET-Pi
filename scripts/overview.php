@@ -24,9 +24,6 @@ $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 
-//$statement2 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == DATE(\'now\', \'localtime\')');
-
-//**********AI
 
 $currentHour = intval(date('G'));
 
@@ -55,7 +52,6 @@ AND
 ) = '$nightDate'
 ");
 
-//*********
 
 if($statement2 == False) {
   echo "Database is busy";
@@ -277,9 +273,7 @@ if($statement == False) {
 $result = $statement->execute();
 $totalcount = $result->fetchArray(SQLITE3_ASSOC);
 
-//$statement3 = $db->prepare('SELECT COUNT(*) FROM detections WHERE Date == Date(\'now\', \'localtime\') AND TIME >= TIME(\'now\', \'localtime\', \'-1 hour\')');
 
-//****AI
 $statement3 = $db->prepare("
 SELECT COUNT(*)
 FROM detections
@@ -287,7 +281,6 @@ WHERE DATETIME(Date || ' ' || Time)
 >= DATETIME('now', 'localtime', '-1 hour')
 ");
 
-//***
 
 
 
@@ -298,9 +291,6 @@ if($statement3 == False) {
 $result3 = $statement3->execute();
 $hourcount = $result3->fetchArray(SQLITE3_ASSOC);
 
-//$statement5 = $db->prepare('SELECT COUNT(DISTINCT(Com_Name)) FROM detections WHERE Date == Date(\'now\',\'localtime\')');
-
-//*****AI
 $statement5 = $db->prepare("
 SELECT COUNT(DISTINCT(Com_Name))
 FROM detections
@@ -320,7 +310,6 @@ AND
 ) = '$nightDate'
 ");
 
-//*****
 if($statement5 == False) {
   echo "Database is busy";
   header("refresh: 0;");

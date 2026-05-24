@@ -573,7 +573,8 @@ if (file_exists('./scripts/thisrun.txt')) {
       <input type="checkbox" name="bat_timer" <?php if($newconfig['BAT_TIMER'] ) { echo "checked"; };?> ><br>
       <p> Stops detection during the day (detects between dusk and dawn).</p>
       <label for="bat_sun_timer">Set dusk and dawn automatically from lat/lon </label>
-      <input type="checkbox" name="bat_sun_timer" <?php if($newconfig['BAT_SUNTIMER'] ) { echo "checked"; };?> ><br>
+      <input type="checkbox" name="bat_sun_timer" 
+      <?php if($newconfig['BAT_SUNTIMER'] ) { echo "checked"; };?> disabled><br>
       <p> Must set these before on basic settings.</p>
 
       <label for="bird_day">Switch to bird detection during the day. </label>
