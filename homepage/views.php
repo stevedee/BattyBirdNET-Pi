@@ -1,8 +1,15 @@
 <?php
 
+//++++++++++++++++
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+//
+
 /* Prevent XSS input */
-$_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
-$_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+$_GET   = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
+$_POST  = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
 $sys_timezone = "";
 // If we can get the timezome from the systems timezone file ust that
@@ -77,22 +84,19 @@ elseif ($config["LONGITUDE"] == "0.000") {
   <button type="submit" name="view" value="Overview" form="views">Overview</button>
 </form>
 <form action="" method="GET" id="views">
-  <button type="submit" name="view" value="Tonight Detections" form="views">Tonight's Detections</button>
+  <button type="submit" name="view" value="Daily Charts" form="views">Nightly Charts</button>
 </form>
 <form action="" method="GET" id="views">
   <button type="submit" name="view" value="Spectrogram" form="views">Spectrogram</button>
+</form>
+<form action="" method="GET" id="views">
+  <button type="submit" name="view" value="Recordings" form="views">Recordings</button>
 </form>
 <form action="" method="GET" id="views">
   <button type="submit" name="view" value="Species Stats" form="views">Best Recordings</button>
 </form>
 <form action="" method="GET" id="views">
   <button type="submit" name="view" value="Streamlit" form="views">Species Stats</button>
-</form>
-<form action="" method="GET" id="views">
-  <button type="submit" name="view" value="Daily Charts" form="views">Nightly Charts</button>
-</form>
-<form action="" method="GET" id="views">
-  <button type="submit" name="view" value="Recordings" form="views">Recordings</button>
 </form>
 <form action="" method="GET" id="views">
   <button type="submit" name="view" value="View Log" form="views">View Log</button>
