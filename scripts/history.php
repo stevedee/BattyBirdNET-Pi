@@ -20,7 +20,7 @@ $theDate = $_GET['date'];
 $theDate = date('Y-m-d');
 }
 $chart = "Combo-$theDate.png";
-$chart2 = "Combo2-$theDate.png";
+//$chart2 = "Combo2-$theDate.png"; //this was Botton 10 chart
 
 $db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 
@@ -147,7 +147,7 @@ function submitID() {
 </form>
 		<table>
 			<tr>
-				<th>Total Detections For The Day</th>
+				<th>Total Detections For The Day:</th>
 				<td><?php echo $totalcount['COUNT(*)'];?></td>
 			</tr>
 		</table>
@@ -161,10 +161,6 @@ if (file_exists('./Charts/'.$chart)) {
   echo "<p>No Charts for $theDate</p>";
 }
 echo "<hr>";
-if (file_exists('./Charts/'.$chart2)) {
-  echo "<img src=\"/Charts/$chart2?nocache=$time\">";
-} else {
-  echo "<p>No Charts For $theDate</p>";
-}?>
+?>
 </div>
 </html>
