@@ -137,7 +137,7 @@ if df_plt_top10_today.empty:
     savename = (
         userDir +
         '/BirdSongs/Extracted/Charts/Combo-' +
-        str(now.strftime("%Y-%m-%d")) +
+        current_night.strftime("%Y-%m-%d") +
         '.png'
     )
     plt.savefig(savename)
@@ -147,7 +147,8 @@ if df_plt_top10_today.empty:
    
 
 # Set Palette for graphics
-batPal = "Reds"
+#batPal = "Reds"
+batPal = "Greys"
 
 # Set up plot axes and titles
 f, axs = plt.subplots(1, 2, figsize=(10, 8), gridspec_kw=dict(width_ratios=[1, 4]), facecolor='#f02080')
@@ -236,11 +237,12 @@ plt.suptitle(
     current_night.strftime("%d-%b-%Y") +
     " updated: " +
     str(now.strftime("%H:%M")),
-    fontsize=16
+    fontsize=14,
+    fontweight='bold'
 )
 
 # Save combined plot
-savename = userDir + '/BirdSongs/Extracted/Charts/Combo-' + str(now.strftime("%Y-%m-%d")) + '.png'
+savename = userDir + '/BirdSongs/Extracted/Charts/Combo-' + current_night.strftime("%Y-%m-%d") + '.png'
 plt.savefig(savename)
 plt.show()
 plt.close()
