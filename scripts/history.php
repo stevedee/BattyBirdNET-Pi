@@ -1,5 +1,12 @@
 <?php
 
+//++++ diag: print errors ++++++++++++
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+//
+
 /* Prevent XSS input */
 $_GET   = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
 $_POST  = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
@@ -15,12 +22,13 @@ if (file_exists('./scripts/thisrun.txt')) {
 }
 
 if(isset($_GET['date'])){
-$theDate = $_GET['date'];
+    $theDate = $_GET['date'];
 } else {
-$theDate = date('Y-m-d');
+    $yesterday = new DateTime('yesterday');
+    $theDate = $yesterday->format('Y-m-d'); // 'date for night' is the start of the night date
 }
+
 $chart = "Combo-$theDate.png";
-//$chart2 = "Combo2-$theDate.png"; //this was Botton 10 chart
 
 $db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 
@@ -147,8 +155,8 @@ function submitID() {
 </form>
 		<table>
 			<tr>
-				<th>Total Detections For The Day:</th>
-				<td><?php echo $totalcount['COUNT(*)'];?></td>
+				<th>Note: Date is the start-of-night date</th>
+				
 			</tr>
 		</table>
     	<?php // <br><button type="button" onclick="showDialog()">Export as CSV for eBird</button><br><br> ?>
