@@ -15,6 +15,13 @@ Overview is currently based upon manually entered Dusk & Dawn values entered via
 
 "Top 10" now 'all' (...well 25, but that is more than enough for us Brits), "bottom 10" has been removed.
 
+<img src="homepage/images/Pi-Bat-Monitor-Dodotronic-Ultramic.jpg" width="800" />
+
+Soprano Pipistrelle echolation + feeding buzz...
+
+<img src="homepage/images/Sop-Pip-feeding-15May2026.png" width="800" />
+
+
 ## Install my 'Bat Call Monitor' version
 
 NOT tested, but should be something like:-
