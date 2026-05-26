@@ -1,8 +1,15 @@
 <?php
 
+//++++ diag: print errors ++++++++++++
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+//
+
 /* Prevent XSS input */
-$_GET   = filter_input_array(INPUT_GET, FILTER_SANITIZE_STRING);
-$_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+$_GET   = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
+$_POST  = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
 $sys_timezone = "";
 // If we can get the timezome from the systems timezone file ust that
@@ -46,9 +53,9 @@ if ($sys_timezone !== "") {
 <div class="banner">
   <div class="logo">
 <?php if(isset($_GET['logo'])) {
-echo "<a href=\"https://github.com/stevedee/BattyBirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/batRed2.png\"></a>";
+echo "<a href=\"https://github.com/stevedee/BattyBirdNET-Pi.git\" target=\"_blank\"><img style=\"width:60;height:60;\" src=\"images/batRed.png\"></a>";
 } else {
-echo "<a href=\"https://github.com/stevedee/BattyBirdNET-Pi.git\" target=\"_blank\"><img src=\"images/batRed2.png\"></a>";
+echo "<a href=\"https://github.com/stevedee/BattyBirdNET-Pi.git\" target=\"_blank\"><img src=\"images/batRed.png\"></a>";
 }?>
   </div>
 
@@ -85,9 +92,6 @@ if(isset($_GET['stream'])){
   }
 } else {
     echo "
-  <form action=\"\" method=\"GET\">
-    <button type=\"submit\" name=\"stream\" value=\"play\">Live Audio</button>
-  </form>
   </div>
 </div><div class=\"centered\"><h3>$site_name</h3></div>";
 }
