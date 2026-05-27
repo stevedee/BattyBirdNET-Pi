@@ -24,7 +24,6 @@ $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 
-
 $currentHour = intval(date('G'));
 
 if ($currentHour < 8) {
@@ -52,7 +51,6 @@ AND
 ) = '$nightDate'
 ");
 
-
 if($statement2 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -60,19 +58,8 @@ if($statement2 == False) {
 $result2 = $statement2->execute();
 $todaycount = $result2->fetchArray(SQLITE3_ASSOC);
 
-if(isset($_GET['custom_image'])){
-  if(isset($config["CUSTOM_IMAGE"])) {
-  ?>
-    <br>
-    <h3><?php echo $config["CUSTOM_IMAGE_TITLE"]; ?></h3>
-    <?php
-    $image_data = file_get_contents($config["CUSTOM_IMAGE"]);
-    $image_base64 = base64_encode($image_data);
-    $img_tag = "<img src='data:image/png;base64," . $image_base64 . "'>";
-    echo $img_tag;
-  }
-  die();
-}
+# Code removed from here 
+
 
 if(isset($_GET['blacklistimage'])) {
   if(isset($_SERVER['PHP_AUTH_USER'])) {
@@ -273,17 +260,6 @@ if($statement == False) {
 $result = $statement->execute();
 $totalcount = $result->fetchArray(SQLITE3_ASSOC);
 
-
-$statement3 = $db->prepare("
-SELECT COUNT(*)
-FROM detections
-WHERE DATETIME(Date || ' ' || Time)
->= DATETIME('now', 'localtime', '-1 hour')
-");
-
-
-
-
 if($statement3 == False) {
   echo "Database is busy";
   header("refresh: 0;");
@@ -291,24 +267,6 @@ if($statement3 == False) {
 $result3 = $statement3->execute();
 $hourcount = $result3->fetchArray(SQLITE3_ASSOC);
 
-$statement5 = $db->prepare("
-SELECT COUNT(DISTINCT(Com_Name))
-FROM detections
-WHERE
-(
-  CAST(strftime('%H', Time) AS INTEGER) >= 16
-  OR
-  CAST(strftime('%H', Time) AS INTEGER) < 8
-)
-AND
-(
-  CASE
-    WHEN CAST(strftime('%H', Time) AS INTEGER) < 8
-    THEN date(Date, '-1 day')
-    ELSE Date
-  END
-) = '$nightDate'
-");
 
 if($statement5 == False) {
   echo "Database is busy";

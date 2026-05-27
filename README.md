@@ -21,6 +21,10 @@ Soprano Pipistrelle echolation + feeding buzz...
 
 <img src="homepage/images/Sop-Pip-feeding-15May2026.png" width="800" />
 
+Bat species for Sussex, England
+
+<img src="homepage/images/BatSpecies.png" width="400" />
+
 
 ## Install my 'Bat Call Monitor' version
 

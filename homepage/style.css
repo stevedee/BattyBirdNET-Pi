@@ -56,13 +56,15 @@ table {
 td {
   padding: 10px;
   vertical-align: top;
-  background-color: rgb(230, 80, 80);
-  font-weight: lighter;
+  background-color: rgb(220, 80, 80);
+  font-weight: bold;
   text-align: center;
 }
 
 th {
-  padding: 12px;
+  padding: 10px;
+  vertical-align: top;
+  background-color: rgb(220, 80, 80);
   font-weight: bold;
   height: auto;
   text-align: center;
