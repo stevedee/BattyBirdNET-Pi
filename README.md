@@ -21,7 +21,7 @@ Soprano Pipistrelle echolation + feeding buzz...
 
 <img src="homepage/images/Sop-Pip-feeding-15May2026.png" width="800" />
 
-Bat species for Sussex, England (selected by clicking the "red bat" image)
+Bat species for Sussex, England (selected by clicking the "black bat" icon)
 
 <img src="homepage/images/BatSpecies.png" width="400" />
 
