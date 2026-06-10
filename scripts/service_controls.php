@@ -10,9 +10,9 @@ function service_status($name) {
        echo "<span style='color:#fc6603'>(stalled - backlog of ".$filesinproc." files in ~/BirdSongs/Processed/)</span>";
        return;
     }
-  } 
+  }  
   $op = shell_exec("sudo systemctl status ".$name." | grep Active | grep ' active\| activating\|running\|waiting\|start'");
-  if(strlen($op) > 0) {
+  if (strlen($op ?? '') > 0) {
     echo "<span style='color:green'>(active)</span>";
   } else {
     echo "<span style='color:#fc6603'>(inactive)</span>";

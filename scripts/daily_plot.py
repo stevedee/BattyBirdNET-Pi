@@ -1,6 +1,5 @@
 # daily_plot
 # modified by Steve Davis
-# 21May2026
 # =============
 
 import sqlite3
@@ -20,7 +19,7 @@ userDir = os.path.expanduser('~')
 
 # ******DEBUG************************
 DEBUG_NOTES = userDir + "/debug.txt"
-DEBUG_MAX_SIZE = 20000  #20kb
+DEBUG_MAX_SIZE = 100000  #100kb
 
 def SaveNote2File(debugNote):
 
@@ -47,6 +46,21 @@ def get_night_settings(config):
     night_hours = list(range(dusk_hour, 24)) + list(range(0, dawn_hour))
 
     return dusk_hour, dawn_hour, night_hours
+    
+# *****bat night *********
+def get_bat_night_date(now, dusk_hour, midday_hour=12):
+    """
+    Returns the canonical 'bat night date' used for filenames and grouping.
+
+    Rule:
+    - Before midday → belongs to previous night's label
+    - After midday → belongs to current night's label
+
+    This stabilises overnight-to-midday reporting.
+    """
+    if now.hour < midday_hour:
+        return (now - pd.Timedelta(days=1)).date()
+    return now.date()
 
 # ******* MAIN ****************
 
@@ -61,8 +75,8 @@ with open(config_path, "r") as f:
 dusk_hour, dawn_hour, night_hours = get_night_settings(config)
 
 SaveNote2File("daily_plot running...")
-SaveNote2File("BAT_DAWN raw: " + str(config.get("BAT_DAWN")))
-SaveNote2File("BAT_DUSK raw: " + str(config.get("BAT_DUSK")))
+#SaveNote2File("BAT_DAWN raw: " + str(config.get("BAT_DAWN"))",  BAT_DUSK raw: " + str(config.get("BAT_DUSK")))
+
 
 conn = sqlite3.connect(userDir + '/BirdNET-Pi/scripts/birds.db')
 df = pd.read_sql_query("SELECT * from detections", conn)
@@ -75,13 +89,12 @@ df['Time'] = pd.to_datetime(df['Time'], unit='ns')
 # Add round hours to dataframe
 df['Hour of Day'] = df['Time'].dt.hour
 
-# Create NightDate: Bat night runs from Dusk to Dawn next day
+# Create NightDate using a fixed midday boundary
 
 df['NightDate'] = df['Date']
 
-# Hours before 16:00 belong to previous bat night
-df.loc[df['Hour of Day'] < dusk_hour, 'NightDate'] = (
-    df.loc[df['Hour of Day'] < dusk_hour, 'NightDate']
+df.loc[df['Hour of Day'] < 12, 'NightDate'] = (
+    df.loc[df['Hour of Day'] < 12, 'NightDate']
     - pd.Timedelta(days=1)
 )
 
@@ -104,10 +117,10 @@ for font in font_manager.findSystemFonts(font_dir):
 
 # Get current bat night; runs Dusk to Dawn
 now = datetime.now()
-if now.hour < dusk_hour:
-    current_night = pd.Timestamp(now.date()) - pd.Timedelta(days=1)
-else:
-    current_night = pd.Timestamp(now.date())
+
+current_night = pd.Timestamp(
+    get_bat_night_date(now, dusk_hour)
+)
 
 df_plt_today = df_plt[df_plt['NightDate'] == current_night]
 
@@ -117,10 +130,10 @@ readings = 25 # as there are only 18 in UK
 plt_top10_today = (df_plt_today['Com_Name'].value_counts()[:readings])
 df_plt_top10_today = df_plt_today[df_plt_today.Com_Name.isin(plt_top10_today.index)]
 
-# *****mod to sync nights; i.e. clear results at 4pm ready for current 'night'
-SaveNote2File("could exit...")
+# *****mod to sync nights; i.e. clear results at midday ready for current 'night'
+# SaveNote2File("could exit...")
 
-if df_plt_top10_today.empty:
+if (now.hour < dusk_hour and now.hour >= 12) or (now.hour >= dusk_hour and df_plt_top10_today.empty):
     SaveNote2File("No detections yet for current night")
     plt.figure(figsize=(10, 4))
     plt.text(
@@ -133,7 +146,7 @@ if df_plt_top10_today.empty:
     )
 
     plt.axis('off')
-
+    #create/overwrite Nightly Chart image
     savename = (
         userDir +
         '/BirdSongs/Extracted/Charts/Combo-' +
@@ -147,8 +160,8 @@ if df_plt_top10_today.empty:
    
 
 # Set Palette for graphics
-#batPal = "Reds"
-batPal = "Greys"
+#batBarChartColours = "Reds"
+batBarChartColours = "Greys"
 
 # Set up plot axes and titles
 f, axs = plt.subplots(1, 2, figsize=(10, 8), gridspec_kw=dict(width_ratios=[1, 4]), facecolor='#f02080')
@@ -183,6 +196,7 @@ axs[0].tick_params(axis='x', length=0)
 # Generate crosstab matrix for heatmap plot
 night_hours = list(range(dusk_hour, 24)) + list(range(0, dawn_hour))
 
+
 heat = pd.crosstab(
     df_plt_top10_today['Com_Name'],
     df_plt_top10_today['Hour of Day']
@@ -202,7 +216,7 @@ plot = sns.heatmap(
     annot=True,
     annot_kws={'size': 8, 'rotation': 45},
     fmt="g",
-    cmap=batPal,
+    cmap=batBarChartColours,
     square=False,
     cbar=False,
     linewidths=0.5,
@@ -219,8 +233,6 @@ for label in axs[1].get_xticklabels():
     except:
         pass
 
-#plot.set_xticklabels(plot.get_xticklabels(), rotation=0, size=7)
-
 
 # Set heatmap border
 for _, spine in plot.spines.items():
@@ -233,9 +245,9 @@ axs[1].tick_params(axis='x', labelsize=12)
 f.subplots_adjust(top=0.9)
 
 plt.suptitle(
-    "Detected Species Tonight " +
+    "Detected Species for the night of " +
     current_night.strftime("%d-%b-%Y") +
-    " updated: " +
+    "\n updated: " +
     str(now.strftime("%H:%M")),
     fontsize=14,
     fontweight='bold'
@@ -244,6 +256,7 @@ plt.suptitle(
 # Save combined plot
 savename = userDir + '/BirdSongs/Extracted/Charts/Combo-' + current_night.strftime("%Y-%m-%d") + '.png'
 plt.savefig(savename)
+SaveNote2File("...save combined plot & close")
 plt.show()
 plt.close()
 

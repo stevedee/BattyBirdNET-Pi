@@ -5,8 +5,18 @@ ini_set('session.gc_maxlifetime', 7200);
 ini_set('user_agent', 'PHP_Flickr/1.0');
 session_set_cookie_params(7200);
 session_start();
-$myDate = date('Y-m-d');
-$chart = "Combo-$myDate.png";
+
+# Need to include hours 0 - 12 in last nights results
+$currentHour = intval(date('G'));
+# 9Jun2026: Lets try replacing 8 & 16  for 12
+if ($currentHour < 12) {
+    $nightDate = date('Y-m-d', strtotime('-1 day'));
+} else {
+    $nightDate = date('Y-m-d');
+}
+
+#$myDate = date('Y-m-d');
+$chart = "Combo-$nightDate.png";
 
 $db = new SQLite3('./scripts/birds.db', SQLITE3_OPEN_CREATE | SQLITE3_OPEN_READWRITE);
 if($db == False) {
@@ -24,27 +34,21 @@ $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 
-$currentHour = intval(date('G'));
 
-if ($currentHour < 8) {
-    $nightDate = date('Y-m-d', strtotime('-1 day'));
-} else {
-    $nightDate = date('Y-m-d');
-}
 
 $statement2 = $db->prepare("
 SELECT COUNT(*)
 FROM detections
 WHERE
 (
-  CAST(strftime('%H', Time) AS INTEGER) >= 16
+  CAST(strftime('%H', Time) AS INTEGER) >= 12
   OR
-  CAST(strftime('%H', Time) AS INTEGER) < 8
+  CAST(strftime('%H', Time) AS INTEGER) < 12
 )
 AND
 (
   CASE
-    WHEN CAST(strftime('%H', Time) AS INTEGER) < 8
+    WHEN CAST(strftime('%H', Time) AS INTEGER) < 12
     THEN date(Date, '-1 day')
     ELSE Date
   END
@@ -89,8 +93,8 @@ if(isset($_GET['blacklistimage'])) {
 }
 
 if(isset($_GET['fetch_chart_string']) && $_GET['fetch_chart_string'] == "true") {
-  $myDate = date('Y-m-d');
-  $chart = "Combo-$myDate.png";
+  #$myDate = date('Y-m-d');
+  $chart = "Combo-$nightDate.png";
   echo $chart;
   die();
 }

@@ -12,7 +12,7 @@ $_GET   = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
 $_POST  = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
 
 $sys_timezone = "";
-// If we can get the timezome from the systems timezone file ust that
+// If we can get the timezome from the systems timezone file use that
 if (file_exists('/etc/timezone')) {
 	$tz_data = file_get_contents('/etc/timezone');
 	if ($tz_data !== false) {
@@ -26,7 +26,7 @@ if (file_exists('/etc/timezone')) {
 		$sys_timezone = $tz_data_array['Timezone'];
 	}
 }
-// finally if we have a valod timezone, set it as the one PHP uses
+// finally if we have a valid timezone, set it as the one PHP uses
 if ($sys_timezone !== "") {
 	date_default_timezone_set($sys_timezone);
 }
