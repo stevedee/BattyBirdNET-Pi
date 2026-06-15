@@ -30,11 +30,27 @@ if (file_exists('./scripts/thisrun.txt')) {
   $config = parse_ini_file('./scripts/firstrun.ini');
 }
 
+# get sunset time
+$python = escapeshellarg('/home/steve/BirdNET-Pi/birdnet/bin/python3');
+$script = escapeshellarg(__DIR__ . '/sun_info.py');
+$latArg = $config['LATITUDE'];
+$lonArg = $config['LONGITUDE'];
+$whenArg = escapeshellarg('down');
+
+$cmd = "$python $script --lat $latArg --lon $lonArg --updown $whenArg 2>&1";
+error_log("CMD: $cmd");
+$output = shell_exec($cmd);
+$sunset = ($output === null) ? 'n/a' : trim($output);
+#get sunrise time
+$whenArg = escapeshellarg('up');
+$cmd = "$python $script --lat $latArg --lon $lonArg --updown $whenArg 2>&1";
+error_log("CMD: $cmd");
+$output = shell_exec($cmd);
+$sunrise = ($output === null) ? 'n/a' : trim($output);
+
 $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
-
-
 
 $statement2 = $db->prepare("
 SELECT COUNT(*)
@@ -224,9 +240,13 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
           }
         }
         </style>
+        <?php
+        echo '<h3>Sunset @ ' . htmlspecialchars($sunset, ENT_QUOTES, 'UTF-8')
+           . ' - Sunrise @ ' . htmlspecialchars($sunrise, ENT_QUOTES, 'UTF-8') . '</h3>';
+        ?>
         <table class="<?php echo ($_GET['previous_detection_identifier'] == 'undefined') ? '' : 'fade-in';  ?>">
           <h3>Most Recent Detection: <span style="font-weight: normal;">
-			  <?php echo $mostrecent['Date']." ".$mostrecent['Time'];?></span></h3>
+			  <?php echo $mostrecent['Date']." @ ".$mostrecent['Time'];?></span></h3>
           <tr>
             <td class="relative"><a target="_blank" href="index.php?filename=<?php echo $mostrecent['File_Name']; ?>"><img class="copyimage" title="Open in new tab" width="25" height="25" src="images/copy.png"></a>
             <div class="centered_image_container" style="margin-bottom: 0px !important;">
@@ -246,7 +266,7 @@ if(isset($_GET['ajax_detections']) && $_GET['ajax_detections'] == "true" && isse
   }
   if($iterations == 0) {
     if($todaycount['COUNT(*)'] > 0) {
-      echo "<h3>Your system is currently processing a backlog of audio ...could take hours</h3>";
+      echo "<h3>Your system is currently processing a backlog of audio ...could take some time</h3>";
     } else {
       echo "<h3>No Detections For Tonight</h3>";
     }

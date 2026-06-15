@@ -125,24 +125,24 @@ current_night = pd.Timestamp(
 df_plt_today = df_plt[df_plt['NightDate'] == current_night]
 
 # Set number of species to report
-readings = 25 # as there are only 18 in UK
+readings = 20 # as there are only 18 in UK
 
 plt_top10_today = (df_plt_today['Com_Name'].value_counts()[:readings])
 df_plt_top10_today = df_plt_today[df_plt_today.Com_Name.isin(plt_top10_today.index)]
 
 # *****mod to sync nights; i.e. clear results at midday ready for current 'night'
-# SaveNote2File("could exit...")
 
-if (now.hour < dusk_hour and now.hour >= 12) or (now.hour >= dusk_hour and df_plt_top10_today.empty):
-    SaveNote2File("No detections yet for current night")
-    plt.figure(figsize=(10, 4))
+
+if (now.hour >= 12 and now.hour < dusk_hour) or (now.hour >= dusk_hour and df_plt_top10_today.empty):
+    SaveNote2File("No detections so far tonight")
+    plt.figure(figsize=(10, 8))
     plt.text(
         0.5,
         0.5,
-        "No bat detections yet tonight",
+        "No bat detections so far tonight",
         ha='center',
         va='center',
-        fontsize=20
+        fontsize=22
     )
 
     plt.axis('off')
@@ -163,12 +163,34 @@ if (now.hour < dusk_hour and now.hour >= 12) or (now.hour >= dusk_hour and df_pl
 #batBarChartColours = "Reds"
 batBarChartColours = "Greys"
 
-# Set up plot axes and titles
-f, axs = plt.subplots(1, 2, figsize=(10, 8), gridspec_kw=dict(width_ratios=[1, 4]), facecolor='#f02080')
-plt.subplots_adjust(left=0.22, bottom=None, right=None, top=None, wspace=0, hspace=0)
-
 # generate y-axis order for all figures based on frequency
-freq_order = pd.value_counts(df_plt_top10_today['Com_Name']).iloc[:readings].index
+freq_order = df_plt_top10_today['Com_Name'].value_counts().iloc[:readings].index
+num_species = len(freq_order)
+row_height = 0.5
+top_bottom_margin = 1.0
+fig_height = top_bottom_margin + (num_species * row_height)
+
+# Set up plot axes and titles
+f, axs = plt.subplots(
+    1, 2,
+    figsize=(10, fig_height),
+    gridspec_kw=dict(width_ratios=[1, 4]),
+    facecolor='#f02080'
+)
+
+f.set_constrained_layout(False)
+
+plt.subplots_adjust(
+    left=0.25,
+    bottom=0.28,
+    right=None,
+    top=0.85,
+    wspace=0,
+    hspace=0
+)
+
+SaveNote2File("...Hello!")
+
 
 # make color for max confidence --> this groups by name and calculates max conf
 confmax = df_plt_top10_today.groupby('Com_Name')['Confidence'].max()
@@ -176,17 +198,19 @@ confmax = df_plt_top10_today.groupby('Com_Name')['Confidence'].max()
 confmax = confmax.reindex(freq_order)
 
 # norm values for color palette
+if confmax.empty:
+    SaveNote2File("Empty confmax - using fallback colour scale")
+    confmax = pd.Series([1], index=["No data"])
+
 norm = plt.Normalize(confmax.values.min(), confmax.values.max())
 colors = plt.cm.Reds(norm(confmax))
 
 # Generate frequency plot
 plot = sns.countplot(y='Com_Name', data=df_plt_top10_today, palette=colors, order=freq_order, ax=axs[0])
 
-# axs[0].tick_params(axis='y', pad=40)
-
 # Try plot grid lines between bars - problem at the moment plots grid lines on bars - want between bars
 z = plot.get_ymajorticklabels()
-plot.set_yticklabels(['\n'.join(textwrap.wrap(ticklabel.get_text(), 20)) for ticklabel in plot.get_yticklabels()], fontsize=12)
+plot.set_yticklabels(['\n'.join(textwrap.wrap(ticklabel.get_text(), 20)) for ticklabel in plot.get_yticklabels()], fontsize=16)
 plot.set(ylabel=None)   
 plot.set(xlabel=None)
 axs[0].set_xticklabels([])
@@ -209,12 +233,21 @@ heat.sort_index(level=0, inplace=True)
 # Get current hour
 current_hour = now.hour
 
+if heat.empty or heat.values.size == 0 or heat.values.sum() == 0:
+    SaveNote2File("Empty heatmap detected - inserting fallback")
+
+    heat = pd.DataFrame(
+        [[0]],
+        index=["No detections"],
+        columns=["0"]
+    )
+
 # Generate heatmap plot
 plot = sns.heatmap(
     heat,
     norm=LogNorm(),
     annot=True,
-    annot_kws={'size': 8, 'rotation': 45},
+    annot_kws={'size': 10, 'rotation': 45},
     fmt="g",
     cmap=batBarChartColours,
     square=False,
@@ -239,18 +272,24 @@ for _, spine in plot.spines.items():
     spine.set_visible(True)
 
 plot.set(ylabel=None)
-plot.set_xlabel("Hour of Night", fontsize=12)
+plot.set_xlabel(
+    "Hour of Night",
+    fontsize=16,
+    labelpad=12
+)
 axs[1].tick_params(axis='x', labelsize=12)
 # Set combined plot layout and titles
-f.subplots_adjust(top=0.9)
+
+
 
 plt.suptitle(
-    "Detected Species for the night of " +
+    "Species for the night of " +
     current_night.strftime("%d-%b-%Y") +
-    "\n updated: " +
+    " ...last updated: " +
     str(now.strftime("%H:%M")),
     fontsize=14,
-    fontweight='bold'
+    fontweight='bold',
+    y=0.97
 )
 
 # Save combined plot
