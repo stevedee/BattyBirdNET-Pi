@@ -1,5 +1,12 @@
 <?php
 
+//++++ diag: print errors ++++++++++++
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+//
+
 /* Prevent XSS input */
 $_GET   = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
 $_POST  = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
@@ -22,6 +29,38 @@ if (file_exists('./scripts/thisrun.txt')) {
 $user = shell_exec("awk -F: '/1000/{print $1}' /etc/passwd");
 $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
+
+//*** steve *** 'Recordings' page *** export a video of sound recording + spectrogram image ****
+if(isset($_GET['savevideo'])) {
+    //echo "hello...";
+    $base_path="/home/steve/BirdSongs/Extracted/By_Date/";
+    $export_path="/home/steve/BirdSongs/Exports/";
+
+    $sound_file = $_GET['savevideo'];
+    $image_file=$sound_file.".png";
+    $position = strripos($sound_file, '/');
+    $video_file = substr($sound_file, $position+1);
+    $video_file=substr($video_file,0,strlen($video_file)-4);
+    $video_file=str_replace(":","-",$video_file).".mp4";
+    //$video_file=str_replace(":","-",$video_file).".avi";
+    //echo $video_file;
+    //$command_string="ffmpeg -loop 1 -y -i ".$base_path.$image_file." -i ".$base_path.$sound_file." -shortest ".$export_path.$video_file;
+    $command_string =
+        "ffmpeg -loop 1 -y " .
+        "-i " . escapeshellarg($base_path.$image_file) . " " .
+        "-i " . escapeshellarg($base_path.$sound_file) . " " .
+        "-filter_complex " . escapeshellarg("[1:a]asetrate=25600[a]") . " " .
+        "-map 0:v -map \"[a]\" " .
+        "-shortest " .
+        escapeshellarg($export_path.$video_file) .
+        " 2>&1";
+    //echo $command_string;
+    exec($command_string, $output,$retval);
+
+    echo "\n\nYour exported video should now be located in:-\n".$export_path.$video_file."\n";
+    die();
+  }
+//*** end ***
 
 
 if(isset($_GET['deletefile'])) {
@@ -144,7 +183,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
   if ($freqshift_tool == "ffmpeg") {
     $cmd = "sudo /usr/bin/nohup /usr/bin/ffmpeg -y -i ".escapeshellarg($pi.$filename)." -af \"rubberband=pitch=".$config['FREQSHIFT_LO']."/".$config['FREQSHIFT_HI']."\" ".escapeshellarg($shifted_path.$filename)."";
     shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
-
   } else if ($freqshift_tool == "sox") {
     //linux.die.net/man/1/sox
     $soxopt = "-q";
@@ -158,7 +196,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
      $cmd = "sudo rm -f " . escapeshellarg($shifted_path.$filename);
      shell_exec($cmd);
     }
-
     echo "OK";
     die();
 }
@@ -252,6 +289,26 @@ function deleteDetection(filename,copylink=false) {
     xhttp.send();
   }
 }
+
+//*** steve ***  saveVideo  ******
+function saveVideo(filename,copylink=false) {
+  if (confirm("Compiling mp4 may take more than 10 seconds;\nAre you sure you want to save as a video?") == true) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.onload = function() {
+      if(this.responseText == "OK"){
+        if(copylink == true) {
+          window.top.close();
+        } else {
+          location.reload();
+        }
+      } else {
+        alert(this.responseText);
+      }
+    }
+   xhttp.open("GET", "play.php?savevideo="+filename, true);
+   xhttp.send();
+  }
+}   //*** end *******
 
 function toggleLock(filename, type, elem) {
   const xhttp = new XMLHttpRequest();
@@ -543,27 +600,25 @@ echo "<table>
         $shiftImageIcon = "images/unshift.svg";
         $shiftTitle = "This file has been shifted down in frequency."; 
         $shiftAction = "unshift";
-  $filename = $filename_shifted;
+        $filename = $filename_shifted;
       } else {
         $shiftImageIcon = "images/shift.svg";
         $shiftTitle = "This file is not shifted in frequency.";
         $shiftAction = "shift";
       }
-
-      echo "<tr>
-  <td class=\"relative\"> 
-
-<img style='cursor:pointer;right:90px' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\")' class=\"copyimage\" width=25 title='Delete Detection'> 
-<img style='cursor:pointer;right:45px' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\"> 
-<img style='cursor:pointer' onclick='toggleShiftFreq(\"".$filename_formatted."\",\"".$shiftAction."\", this)' class=\"copyimage\" width=25 title=\"".$shiftTitle."\" src=\"".$shiftImageIcon."\"> $date $time<br>$confidence<br>
-
+   
+      echo "<tr><td class=\"relative\">
+      <img style='cursor:pointer;left:50px' src='images/tux.svg' onclick='saveVideo(\"".$filename_formatted."\")' class=\"copyimage\" width=25 title='save as video'>
+      <img style='cursor:pointer;right:90px' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\")' class=\"copyimage\" width=25 title='Delete Detection'> 
+      <img style='cursor:pointer;right:45px' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\"> 
+      <img style='cursor:pointer' onclick='toggleShiftFreq(\"".$filename_formatted."\",\"".$shiftAction."\", this)' class=\"copyimage\" width=25 title=\"".$shiftTitle."\" src=\"".$shiftImageIcon."\"> $date $time<br>$confidence<br>
         ".$imageelem."
         </td>
         </tr>";
     } else {
       echo "<tr>
-  <td class=\"relative\">$date $time<br>$confidence
-<img style='cursor:pointer' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\")' class=\"copyimage\" width=25 title='Delete Detection'><br>
+      <td class=\"relative\">$date $time<br>$confidence
+      <img style='cursor:pointer' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\")' class=\"copyimage\" width=25 title='Delete Detection'><br>
         ".$imageelem."
         </td>
         </tr>";
@@ -618,7 +673,7 @@ echo "<table>
         $shiftImageIcon = "images/unshift.svg";
         $shiftTitle = "This file has been shifted down in frequency."; 
         $shiftAction = "unshift";
-  $filename = $filename_shifted;
+        $filename = $filename_shifted;
       } else {
         $shiftImageIcon = "images/shift.svg";
         $shiftTitle = "This file is not shifted in frequency.";
@@ -626,18 +681,17 @@ echo "<table>
       }
 
           echo "<tr>
-      <td class=\"relative\"> 
-
-<img style='cursor:pointer;right:90px' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\", true)' class=\"copyimage\" width=25 title='Delete Detection'> 
-<img style='cursor:pointer;right:45px' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\"> 
-<img style='cursor:pointer' onclick='toggleShiftFreq(\"".$filename_formatted."\",\"".$shiftAction."\", this)' class=\"copyimage\" width=25 title=\"".$shiftTitle."\" src=\"".$shiftImageIcon."\">$date $time<br>$confidence<br>
-
-<video onplay='setLiveStreamVolume(0)' onended='setLiveStreamVolume(1)' onpause='setLiveStreamVolume(1)' controls poster=\"$filename_png\" preload=\"none\" title=\"$filename\"><source src=\"$filename\"></video></td>
+      <td class=\"relative\">
+      <img style='cursor:pointer;right:90px' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\", true)' class=\"copyimage\" width=25 title='Delete Detection'> 
+      <img style='cursor:pointer;right:45px' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\"> 
+      <img style='cursor:pointer' onclick='toggleShiftFreq(\"".$filename_formatted."\",\"".$shiftAction."\", this)' class=\"copyimage\" width=25 title=\"".$shiftTitle."\" src=\"".$shiftImageIcon."\">$date $time<br>$confidence<br>
+      
+      <video onplay='setLiveStreamVolume(0)' onended='setLiveStreamVolume(1)' onpause='setLiveStreamVolume(1)' controls poster=\"$filename_png\" preload=\"none\" title=\"$filename\"><source src=\"$filename\"></video></td>
             </tr>";
         } else {
           echo "<tr>
       <td class=\"relative\">$date $time<br>$confidence
-<img style='cursor:pointer' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\", true)' class=\"copyimage\" width=25 title='Delete Detection'><br>
+      <img style='cursor:pointer' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\", true)' class=\"copyimage\" width=25 title='Delete Detection'><br>
             <video onplay='setLiveStreamVolume(0)' onended='setLiveStreamVolume(1)' onpause='setLiveStreamVolume(1)' controls poster=\"$filename_png\" preload=\"none\" title=\"$filename\"><source src=\"$filename\"></video></td>
             </tr>";
         }
