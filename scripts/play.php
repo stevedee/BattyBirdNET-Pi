@@ -5,8 +5,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-//
-
 /* Prevent XSS input */
 $_GET   = filter_input_array(INPUT_GET, FILTER_UNSAFE_RAW);
 $_POST  = filter_input_array(INPUT_POST, FILTER_UNSAFE_RAW);
@@ -35,7 +33,6 @@ if(isset($_GET['savevideo'])) {
     //echo "hello...";
     $base_path="/home/steve/BirdSongs/Extracted/By_Date/";
     $export_path="/home/steve/BirdSongs/Exports/";
-
     $sound_file = $_GET['savevideo'];
     $image_file=$sound_file.".png";
     $position = strripos($sound_file, '/');
@@ -56,8 +53,8 @@ if(isset($_GET['savevideo'])) {
         " 2>&1";
     //echo $command_string;
     exec($command_string, $output,$retval);
-
     echo "\n\nYour exported video should now be located in:-\n".$export_path.$video_file."\n";
+    echo "<img style='cursor:pointer'>";
     die();
   }
 //*** end ***
@@ -291,24 +288,31 @@ function deleteDetection(filename,copylink=false) {
 }
 
 //*** steve ***  saveVideo  ******
-function saveVideo(filename,copylink=false) {
-  if (confirm("Compiling mp4 may take more than 10 seconds;\nAre you sure you want to save as a video?") == true) {
+function saveVideo(filename, copylink=false) {
+  if (confirm("Compile may take more than 10 seconds. Continue?") == true) {
+    document.body.style.cursor = "wait"; // before send
+
     const xhttp = new XMLHttpRequest();
-    xhttp.onload = function() {
-      if(this.responseText == "OK"){
-        if(copylink == true) {
-          window.top.close();
-        } else {
-          location.reload();
-        }
+    xhttp.onload = function () {
+      document.body.style.cursor = ""; // after it finishes
+      if (this.responseText == "OK") {
+		  alert("Done"); 
+        if (copylink == true) window.top.close();
+        else location.reload();
       } else {
         alert(this.responseText);
       }
-    }
-   xhttp.open("GET", "play.php?savevideo="+filename, true);
-   xhttp.send();
+    };
+    xhttp.onerror = function () {
+      document.body.style.cursor = "";
+      alert("Request failed.");
+    };
+
+    xhttp.open("GET", "play.php?savevideo=" + filename, true);
+    xhttp.send();
   }
 }   //*** end *******
+
 
 function toggleLock(filename, type, elem) {
   const xhttp = new XMLHttpRequest();
@@ -682,6 +686,7 @@ echo "<table>
 
           echo "<tr>
       <td class=\"relative\">
+      <img style='cursor:pointer;left:50px' src='images/tux.svg' onclick='saveVideo(\"".$filename_formatted."\")' class=\"copyimage\" width=25 title='save as video'>
       <img style='cursor:pointer;right:90px' src='images/delete.svg' onclick='deleteDetection(\"".$filename_formatted."\", true)' class=\"copyimage\" width=25 title='Delete Detection'> 
       <img style='cursor:pointer;right:45px' onclick='toggleLock(\"".$filename_formatted."\",\"".$type."\", this)' class=\"copyimage\" width=25 title=\"".$title."\" src=\"".$imageicon."\"> 
       <img style='cursor:pointer' onclick='toggleShiftFreq(\"".$filename_formatted."\",\"".$shiftAction."\", this)' class=\"copyimage\" width=25 title=\"".$shiftTitle."\" src=\"".$shiftImageIcon."\">$date $time<br>$confidence<br>
