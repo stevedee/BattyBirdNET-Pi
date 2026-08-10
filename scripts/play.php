@@ -29,6 +29,8 @@ $home = shell_exec("awk -F: '/1000/{print $6}' /etc/passwd");
 $home = trim($home);
 
 //*** steve *** 'Recordings' page *** export a video of sound recording + spectrogram image ****
+//10-Aug-2026: Now Telegram friendly format
+
 if(isset($_GET['savevideo'])) {
     //echo "hello...";
     $base_path="/home/steve/BirdSongs/Extracted/By_Date/";
@@ -39,24 +41,30 @@ if(isset($_GET['savevideo'])) {
     $video_file = substr($sound_file, $position+1);
     $video_file=substr($video_file,0,strlen($video_file)-4);
     $video_file=str_replace(":","-",$video_file).".mp4";
-    //$video_file=str_replace(":","-",$video_file).".avi";
-    //echo $video_file;
-    //$command_string="ffmpeg -loop 1 -y -i ".$base_path.$image_file." -i ".$base_path.$sound_file." -shortest ".$export_path.$video_file;
+
     $command_string =
         "ffmpeg -loop 1 -y " .
+        "-framerate 25 " .
         "-i " . escapeshellarg($base_path.$image_file) . " " .
         "-i " . escapeshellarg($base_path.$sound_file) . " " .
         "-filter_complex " . escapeshellarg("[1:a]asetrate=25600[a]") . " " .
         "-map 0:v -map \"[a]\" " .
+        "-vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" " .
+        "-c:v libx264 -pix_fmt yuv420p " .
+        "-c:a aac -b:a 128k " .
         "-shortest " .
+        "-movflags +faststart " .
         escapeshellarg($export_path.$video_file) .
         " 2>&1";
+
     //echo $command_string;
     exec($command_string, $output,$retval);
     echo "\n\nYour exported video should now be located in:-\n".$export_path.$video_file."\n";
-    echo "<img style='cursor:pointer'>";
+    //echo "<img style='cursor:pointer'>";
     die();
-  }
+}
+
+
 //*** end ***
 
 
@@ -179,7 +187,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
 
   if ($freqshift_tool == "ffmpeg") {
     $cmd = "sudo /usr/bin/nohup /usr/bin/ffmpeg -y -i ".escapeshellarg($pi.$filename)." -af \"rubberband=pitch=".$config['FREQSHIFT_LO']."/".$config['FREQSHIFT_HI']."\" ".escapeshellarg($shifted_path.$filename)."";
-    shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
+    //shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
+    //'shifted' needs to be owned by user
+    //shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd." && sudo chown -R 1000:1000 ".$shifted_path.$dir);
   } else if ($freqshift_tool == "sox") {
     //linux.die.net/man/1/sox
     $soxopt = "-q";
@@ -187,7 +197,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
     $soxspeed = $config['SOX_SPEED'];
     $cmd = "sudo /usr/bin/nohup /usr/bin/sox ".escapeshellarg($pi.$filename)." ".escapeshellarg($shifted_path.$filename)." speed ".$soxspeed." rate 44100";
     # $cmd = "sudo /usr/bin/nohup /usr/bin/sox ".escapeshellarg($pi.$filename)." ".escapeshellarg($shifted_path.$filename)." pitch ".$soxopt." ".$soxpitch;
-   shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
+   //shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd);
+   //'shifted' needs to be owned by user
+   shell_exec("sudo mkdir -p ".$shifted_path.$dir." && ".$cmd." && sudo chown -R 1000:1000 ".$shifted_path.$dir);
   }
     } else {
      $cmd = "sudo rm -f " . escapeshellarg($shifted_path.$filename);

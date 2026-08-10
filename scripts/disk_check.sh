@@ -2,9 +2,35 @@
 set -x
 
 source /etc/birdnet/birdnet.conf
+
 used="$(df -h ${EXTRACTED} | tail -n1 | awk '{print $5}')"
 
-if [ "${used//%}" -ge 95 ]; then
+# Delete YYYY-MM-DD folders older than DAYS_TO_KEEP days
+keepers=$(date -d "${DAYS_TO_KEEP} days ago" +%F)
+
+# Recordings By_Date
+cd "${EXTRACTED}/By_Date" || exit 1
+
+for d in ????-??-??; do
+    [ -d "$d" ] || continue
+    if [[ "$d" < "$keepers" ]]; then
+        echo "Deleting $d"
+        rm -rf "$d"
+    fi
+done
+
+# 'shifted' recordings
+cd "${EXTRACTED}/By_Date/shifted" || exit 1
+
+for d in ????-??-??; do
+    [ -d "$d" ] || continue
+    if [[ "$d" < "$keepers" ]]; then
+        echo "Deleting $d"
+        rm -rf "$d"
+    fi
+done
+
+if [ "${used//%}" -ge 50 ]; then
 
   case $FULL_DISK in
     purge) echo "Removing oldest data"
@@ -34,7 +60,7 @@ if [ "${used//%}" -ge 95 ]; then
   esac
 fi
 sleep 1
-if [ "${used//%}" -ge 95 ]; then
+if [ "${used//%}" -ge 50 ]; then
   case $FULL_DISK in
     purge) echo "Removing more data"
        rm -rfv ${PROCESSED}/*;;
