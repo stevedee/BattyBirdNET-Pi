@@ -147,6 +147,9 @@ FREQSHIFT_LO=4000
 ## FREQSHIFT_PITCH
 FREQSHIFT_PITCH=-1500
 
+##added this manually as missing from original if 'update' is not performed
+ACTIVATE_FREQSHIFT_IN_LIVESTREAM="true"
+
 ## CHANNELS holds the variable that corresponds to the number of channels the
 ## sound card supports.
 
@@ -157,6 +160,10 @@ CHANNELS=1
 ## keep = Keep all data and 'stop_core_services.sh'
 
 FULL_DISK=purge
+
+## DAYS_TO_KEEP recordings; older folders & their files are deleted
+
+DAYS_TO_KEEP=7
 
 ## PRIVACY_THRESHOLD can be set to enable sensitivity to Human sounds. This
 ## setting is an effort to introduce privacy into the data collection.
