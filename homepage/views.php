@@ -366,7 +366,7 @@ if(isset($_GET['view'])){
         if($initcommand == "update_birdnet.sh") {
           unset($_SESSION['behind']);
         }
-        $results = shell_exec("$command 2>&1");
+        $results = shell_exec("$command 2>&1") ?? '';
         $results = str_replace("FAILURE", "<span style='color:red'>FAILURE</span>", $results);
         $results = str_replace("failed", "<span style='color:red'>failed</span>",$results);
         $results = str_replace("active (running)", "<span style='color:green'><b>active (running)</b></span>",$results);

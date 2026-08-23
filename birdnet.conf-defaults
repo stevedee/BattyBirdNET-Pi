@@ -148,7 +148,10 @@ FREQSHIFT_LO=4000
 FREQSHIFT_PITCH=-1500
 
 ##added this manually as missing from original if 'update' is not performed
-ACTIVATE_FREQSHIFT_IN_LIVESTREAM="true"
+ACTIVATE_FREQSHIFT_IN_LIVESTREAM="false"
+
+## Indicates using: ../BirdNET-Pi/tests/bat-test.wav as input
+TEST_FILE_AS_INPUT="false"
 
 ## CHANNELS holds the variable that corresponds to the number of channels the
 ## sound card supports.

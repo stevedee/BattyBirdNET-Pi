@@ -105,6 +105,22 @@ if(isset($_GET['submit'])) {
     }
   }
 
+
+
+  if (isset($_GET["test_file_as_input"])) {
+    $test_file_as_input = trim($_GET["test_file_as_input"]);
+
+    //Setting exists already, see if the value changed
+    if (strcmp($test_file_as_input, $config['TEST_FILE_AS_INPUT']) !== 0) {
+      $contents = preg_replace("/TEST_FILE_AS_INPUT=.*/", "TEST_FILE_AS_INPUT=\"$test_file_as_input\"", $contents);
+      $contents2 = preg_replace("/TEST_FILE_AS_INPUT=.*/", "TEST_FILE_AS_INPUT=\"$test_file_as_input\"", $contents2);
+      save_to_cfg($contents, $contents2);
+      exec("sudo systemctl restart livestream.service");
+    }
+  }
+
+
+
   
   if(isset($_GET["overlap"])) {
     $overlap = $_GET["overlap"];
@@ -574,7 +590,7 @@ if (file_exists('./scripts/thisrun.txt')) {
       <p> Stops detection during the day (detects between dusk and dawn).</p>
       <label for="bat_sun_timer">Set dusk and dawn automatically from lat/lon </label>
       <input type="checkbox" name="bat_sun_timer" 
-      <?php if($newconfig['BAT_SUNTIMER'] ) { echo "checked"; };?> disabled><br>
+      <?php if($newconfig['BAT_SUNTIMER'] ) { echo "checked"; };?> ><br>
       <p> Must set these before on basic settings.</p>
 
       <label for="bird_day">Switch to bird detection during the day. </label>

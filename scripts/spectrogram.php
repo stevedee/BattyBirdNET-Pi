@@ -327,21 +327,21 @@ function toggleCompression(state) {
   }
 }
 
-function toggleFreqshift(state) {
+function toggleTestFileInput(state) {
   if (state == true) {
-    console.log("freqshift activated")
+    console.log("test file input activated")
   } else {
-    console.log("freqshift deactivated")
+    console.log("test file input deactivated")
   }
 
   freqShiftReconnectDelay = <?php echo $FREQSHIFT_RECONNECT_DELAY; ?>;
 
-  var livestream_freqshift_spinner = document.getElementById('livestream_freqshift_spinner');
-  livestream_freqshift_spinner.style.display = "inline"; 
+  var test_file_spinner = document.getElementById('test_file_spinner');
+  test_file_spinner.style.display = "inline"; 
   // Create the XMLHttpRequest object.
   const xhr = new XMLHttpRequest();
   // Initialize the request
-  xhr.open("GET", './views.php?activate_freqshift_in_livestream=' + state + '&view=Advanced&submit=advanced');
+  xhr.open("GET", './views.php?test_file_as_input=' + state + '&view=Advanced&submit=advanced');
   // Send the request
   xhr.send();
   // Fired once the request completes successfully
@@ -360,7 +360,7 @@ function toggleFreqshift(state) {
           audio_player.load();
           audio_player.play();
 
-          livestream_freqshift_spinner.style.display = "none"; 
+          test_file_spinner.style.display = "none"; 
         },
         freqShiftReconnectDelay
         )
@@ -407,7 +407,7 @@ function initialize() {
     gainNode.connect(ACTX.destination);
 
     document.getElementById("compression").removeAttribute("disabled");
-    document.getElementById("freqshift").removeAttribute("disabled");
+    document.getElementById("test_file_as_input").removeAttribute("disabled");
 
     console.log(SOURCE);
     const DATA = new Uint8Array(ANALYSER.frequencyBinCount);
@@ -527,22 +527,22 @@ h1 {
     <label>Compression: </label>
     <input name="compression" type="checkbox" id="compression" disabled>
   </div>
-  <div style="display:inline" id="fshift" >
-    <label>Freq shift: </label>
+  <div style="display:inline" id="test_file_control" >
+    <label>Test File As Input: </label>
     <?php 
-        if ($config['ACTIVATE_FREQSHIFT_IN_LIVESTREAM'] == "true") {
-          $freqshift_state = "checked";
+        if ($config['TEST_FILE_AS_INPUT'] == "true") {
+          $test_file_state = "checked";
         } else {
-          $freqshift_state = "";
+          $test_file_state = "";
         }
     ?>
-    <input name="freqshift" type="checkbox" id="freqshift" <?php echo($freqshift_state); ?>  disabled>
-    <img id="livestream_freqshift_spinner" src=images/spinner.gif style="height: 25px; vertical-align: top; display: none">
+    <input name="test_file_as_input" type="checkbox" id="test_file_as_input" <?php echo($test_file_state); ?>>
+    <img id="test_file_spinner" src="images/spinner.gif" style="height: 25px; vertical-align: top; display: none">
   </div>
 </div>
 
 <audio style="display:none" controls="" crossorigin="anonymous" id='player' preload="none"><source id="playersrc" src="/stream"></audio>
-<h1 id="loading-h1">Loading...</h1>
+<h1 id="loading-h1">Loading...545...</h1>
 <canvas></canvas>
 
 <script>
@@ -609,8 +609,11 @@ compression.onclick = function() {
   toggleCompression(this.checked);
 }
 
-var freqshift = document.getElementById("freqshift");
-freqshift.onclick = function() {
-  toggleFreqshift(this.checked);
+
+
+var test_file_as_input = document.getElementById("test_file_as_input");
+
+test_file_as_input.onclick = function() {
+    toggleTestFileInput(this.checked);
 }
 </script>
